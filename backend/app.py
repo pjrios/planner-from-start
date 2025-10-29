@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
 from .pipeline import ingest_files
+from .routes.ingest import router as plan_ingest_router
 from . import vector_store
 
 LOGGER = logging.getLogger(__name__)
@@ -26,6 +27,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(plan_ingest_router)
 
 
 if FRONTEND_DIR.exists():
