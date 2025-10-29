@@ -5,14 +5,17 @@ import logging
 from pathlib import Path
 from typing import List
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from datetime import datetime, timezone
+
+from fastapi import FastAPI, File, HTTPException, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
 from .pipeline import ingest_files
+from .services import reports as reports_service
 from . import vector_store
 
 LOGGER = logging.getLogger(__name__)
@@ -96,4 +99,66 @@ def query_endpoint(payload: QueryRequest) -> QueryResponse:
     return QueryResponse(
         query=payload.query,
         results=[QueryResult(**item) for item in results],
+    )
+
+
+def _report_response(
+    format_: str | None,
+    filename: str,
+    summary: list[dict],
+    csv_builder,
+    pdf_builder,
+):
+    if format_ is None:
+        return JSONResponse(
+            {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "rows": summary,
+            }
+        )
+
+    format_lower = format_.lower()
+    if format_lower == "csv":
+        csv_data = csv_builder(summary).encode("utf-8")
+        return StreamingResponse(
+            iter([csv_data]),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}.csv",
+            },
+        )
+    if format_lower == "pdf":
+        pdf_data = pdf_builder(summary)
+        return StreamingResponse(
+            iter([pdf_data]),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}.pdf",
+            },
+        )
+
+    raise HTTPException(status_code=400, detail="Unsupported format. Use csv or pdf.")
+
+
+@app.get("/reports/trimester")
+def get_trimester_report(format: str | None = Query(default=None)):
+    summary = reports_service.trimester_summary()
+    return _report_response(
+        format,
+        "trimester_report",
+        summary,
+        reports_service.build_trimester_csv,
+        reports_service.build_trimester_pdf,
+    )
+
+
+@app.get("/reports/topic")
+def get_topic_report(format: str | None = Query(default=None)):
+    summary = reports_service.topic_summary()
+    return _report_response(
+        format,
+        "topic_report",
+        summary,
+        reports_service.build_topic_csv,
+        reports_service.build_topic_pdf,
     )
