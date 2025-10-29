@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planner Knowledge Base</title>
+    <link rel="stylesheet" href="/frontend/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Planner Knowledge Base</h1>
+        <p class="subtitle">
+          Upload yearly plans and supporting documents, then search across them to
+          see the original context of every answer.
+        </p>
+      </header>
+
+      <section class="card" id="upload-section">
+        <h2>1. Upload materials</h2>
+        <form id="upload-form">
+          <input
+            type="file"
+            id="file-input"
+            name="files"
+            multiple
+            accept=".pdf,.docx,.pptx,.txt,.md"
+          />
+          <button type="submit">Ingest Files</button>
+        </form>
+        <output id="upload-status" aria-live="polite"></output>
+      </section>
+
+      <section class="card" id="query-section">
+        <h2>2. Search your knowledge base</h2>
+        <form id="query-form">
+          <label for="query-text">Ask a question or search for a topic</label>
+          <div class="query-input">
+            <input
+              type="text"
+              id="query-text"
+              name="query"
+              placeholder="e.g. Assessment rubrics for Term 2"
+              required
+            />
+            <input
+              type="number"
+              id="query-results"
+              name="n_results"
+              min="1"
+              max="20"
+              value="5"
+              title="Number of matches to return"
+            />
+            <button type="submit">Search</button>
+          </div>
+        </form>
+        <output id="query-status" aria-live="polite"></output>
+        <div id="results-container" hidden>
+          <h3>Matches</h3>
+          <ol id="results-list"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/frontend/app.js"></script>
+  </body>
+</html>
