@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable, List
+from typing import Any, Dict, Iterable, List
 
 import chromadb
 from chromadb import ClientAPI
@@ -41,6 +41,30 @@ def add_embeddings(
     LOGGER.info("Persisted %s chunks to vector store", len(texts))
 
 
-def similarity_search(query: str, *, n_results: int = 5):
+def similarity_search(query: str, *, n_results: int = 5) -> List[Dict[str, Any]]:
     collection = get_or_create_collection()
-    return collection.query(query_texts=[query], n_results=n_results)
+    if collection.count() == 0:
+        LOGGER.info("Similarity search skipped: collection is empty")
+        return []
+
+    results = collection.query(
+        query_texts=[query],
+        n_results=n_results,
+        include=["documents", "metadatas", "distances"],
+    )
+
+    documents = results.get("documents", [[]])[0]
+    metadatas = results.get("metadatas", [[]])[0]
+    distances = results.get("distances", [[]])[0]
+
+    response: List[Dict[str, Any]] = []
+    for doc, metadata, distance in zip(documents, metadatas, distances):
+        response.append(
+            {
+                "document": doc,
+                "metadata": metadata or {},
+                "distance": distance,
+            }
+        )
+
+    return response

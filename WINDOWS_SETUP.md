@@ -63,27 +63,14 @@ Then reactivate the environment.
 
 ## 5. Install Project Dependencies
 
-Install document loaders, chunkers, embedding models, and vector database clients:
+Install the exact Python dependencies used by the project:
 ```powershell
-pip install --upgrade \
-    fastapi uvicorn[standard] pydantic \
-    python-multipart tqdm rich \
-    sentence-transformers "transformers>=4.38" accelerate \
-    chromadb qdrant-client \
-    unstructured[all-docs] pdfminer.six pypdf \
-    llama-cpp-python==0.2.79 "ctranslate2<4" \
-    torchmetrics scikit-learn
+pip install -r requirements.txt
 ```
 
-### Optional Enhancements
-- **GPU-accelerated OCR** (if you expect scanned PDFs):
-  ```powershell
-  pip install easyocr opencv-python-headless
-  ```
-- **LangChain tooling** (for pipelines and evaluations):
-  ```powershell
-  pip install langchain langchain-community
-  ```
+This pulls in FastAPI, ChromaDB, document loaders, and the
+`sentence-transformers` model required for embeddings. Optional extras such as
+OCR or LangChain tooling can still be added later if your workflow needs them.
 
 ## 6. Install and Configure a Vector Database
 
@@ -135,19 +122,28 @@ mkdir data\chroma
 1. Ensure the virtual environment is active.
 2. Launch the FastAPI backend:
    ```powershell
-   uvicorn backend.ingest_service:app --host 0.0.0.0 --port 8000 --reload
+   uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload
    ```
-3. Open another PowerShell window (with the virtual environment activated) to run ingestion tests.
+3. Open <http://localhost:8000> in your browser to use the built-in upload and search UI, or open another PowerShell window (with the virtual environment activated) to run ingestion tests.
 
 ### Smoke Test – Upload a Sample Document
 ```powershell
-Invoke-WebRequest `
-  -Uri http://localhost:8000/upload `
+$document = Get-Item .\samples\lesson-plan.pdf
+Invoke-RestMethod `
+  -Uri http://localhost:8000/ingest `
   -Method Post `
-  -InFile .\samples\lesson-plan.pdf `
-  -Headers @{"Content-Type" = "application/pdf"}
+  -Form @{ files = $document }
 ```
-Check the backend logs for successful preprocessing and embedding writes.
+Check the backend logs for successful preprocessing and embedding writes. To run a
+semantic search from PowerShell, send a JSON payload to the `/query` endpoint:
+
+```powershell
+Invoke-RestMethod `
+  -Uri http://localhost:8000/query `
+  -Method Post `
+  -ContentType 'application/json' `
+  -Body '{"query": "assessment rubric", "n_results": 3}'
+```
 
 ## 10. GPU Utilization Tips
 
@@ -181,9 +177,11 @@ For PyTorch/CUDA updates, follow release notes to ensure compatibility with your
 
 ## 13. Next Steps
 
-With the environment ready, proceed to:
-1. Implement or update `backend/ingest_service.py` with file upload routes.
-2. Configure chunking/embedding modules to read `.env` settings.
-3. Begin ingesting class plans and verifying retrieval workflows.
+With the environment ready:
+1. Open <http://localhost:8000> to access the web interface for uploads and search.
+2. Inspect `backend/app.py` if you want to customize API behaviour or add new
+   endpoints.
+3. Begin ingesting class plans and verifying retrieval workflows using either the
+   UI or the REST endpoints.
 
 Keep this guide alongside the repository for future reference and onboarding.

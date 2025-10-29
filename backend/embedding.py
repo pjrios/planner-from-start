@@ -37,3 +37,11 @@ def embed_documents(chunks: Iterable[str]) -> List[List[float]]:
     model = get_embedding_model()
     embeddings = model.encode(list(chunks), convert_to_numpy=False, show_progress_bar=True)
     return [embedding.tolist() for embedding in embeddings]
+
+
+def embed_query(query: str) -> List[float]:
+    model = get_embedding_model()
+    embedding = model.encode(
+        [query], convert_to_numpy=False, show_progress_bar=False
+    )[0]
+    return embedding.tolist()

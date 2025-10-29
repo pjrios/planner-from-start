@@ -9,6 +9,7 @@ BASE_DIR: Final[Path] = Path(__file__).resolve().parent.parent
 DATA_DIR: Final[Path] = BASE_DIR / "data"
 VECTOR_DB_DIR: Final[Path] = DATA_DIR / "vector_store"
 TEMP_UPLOAD_DIR: Final[Path] = DATA_DIR / "uploads"
+FRONTEND_DIR: Final[Path] = BASE_DIR / "frontend"
 
 # Default embedding model; can be overridden via environment variable.
 EMBEDDING_MODEL_NAME: Final[str] = os.getenv(

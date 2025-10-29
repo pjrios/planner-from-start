@@ -11,6 +11,8 @@ semantic retrieval.
 - Sliding-window text chunking with configurable chunk size and overlap.
 - SentenceTransformer embeddings with automatic CPU/MPS/CUDA device selection.
 - Persistent local vector storage powered by ChromaDB.
+- Built-in web interface for uploading documents and running semantic searches with
+  provenance metadata.
 
 ## Quick start (macOS)
 Run the setup script, which installs dependencies, downloads the embedding model, and
@@ -20,12 +22,21 @@ launches the API server:
 ./setup_mac.sh
 ```
 
-Once the server is running, open another terminal and test the ingestion endpoint:
+Once the server is running, visit <http://localhost:8000> to open the web interface.
+Use the **Upload materials** panel to ingest files and the **Search your knowledge
+base** panel to query the stored chunks. Each result shows the original file name,
+chunk index, and similarity score so you can trace every answer back to its source.
+
+You can still interact with the API directly:
 
 ```bash
 curl -X POST "http://localhost:8000/ingest" \
   -F "files=@/path/to/your/document.pdf" \
   -F "files=@/path/to/another.docx"
+
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "assessment rubric", "n_results": 3}'
 ```
 
 Check service health at `http://localhost:8000/health`.
