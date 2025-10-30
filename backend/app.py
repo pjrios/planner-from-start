@@ -333,6 +333,9 @@ def get_topic_report(format: str | None = Query(default=None)):
         summary,
         reports_service.build_topic_csv,
         reports_service.build_topic_pdf,
+    )
+
+
 @app.get("/plans/{draft_id}", response_model=PlanDraft)
 def get_plan_draft(draft_id: str) -> PlanDraft:
     data = plan_review.get_draft(draft_id)
