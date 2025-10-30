@@ -5,14 +5,22 @@ import logging
 from pathlib import Path
 from typing import Iterable, List
 
-from . import chunkers, document_loaders, embedding, vector_store
+from . import chunkers, document_loaders, embedding
 from .config import CHUNK_OVERLAP, CHUNK_SIZE
 
 LOGGER = logging.getLogger(__name__)
 
+try:  # pragma: no cover - vector store may not be available in tests
+    from . import vector_store
+except Exception as exc:  # noqa: BLE001 - degrade gracefully
+    vector_store = None
+    LOGGER.warning("Vector store unavailable: %s", exc)
+
 
 def ingest_files(file_paths: Iterable[Path]) -> dict[str, int]:
     """Ingest provided files into the vector store."""
+    if vector_store is None:
+        raise RuntimeError("Vector store unavailable")
     provided_files = list(Path(path) for path in file_paths)
     supported_files = list(document_loaders.iter_supported_files(provided_files))
     unsupported_count = len(provided_files) - len(supported_files)

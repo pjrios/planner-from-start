@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planner Knowledge Base</title>
     <link rel="stylesheet" href="/frontend/styles.css" />
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
     <main class="container">
@@ -118,6 +124,15 @@
             </table>
           </article>
         </div>
+      <section class="card" id="review-section">
+        <h2>3. Review parsed plans</h2>
+        <p>
+          Verify trimester dates, learning levels, and topics before approving drafts in the
+          <a href="/frontend/pages/plan-review.html">plan review workspace</a>.
+        </p>
+      <section class="card" id="holiday-section">
+        <h2>3. Manage holidays & scheduling</h2>
+        <div id="holiday-manager"></div>
       </section>
     </main>
 
@@ -125,5 +140,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <script type="module" src="/frontend/pages/reports.jsx"></script>
+    <script type="text/babel" src="/frontend/components/HolidayManager.jsx"></script>
   </body>
 </html>
