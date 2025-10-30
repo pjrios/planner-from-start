@@ -14,12 +14,17 @@ from pydantic import BaseModel, Field, validator
 
 from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
 from .pipeline import ingest_files
+from . import vector_store
+from .database import init_db
+from .routers import classes
 from . import database, scheduler, vector_store
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="Planner Ingestion Service", version="0.1.0")
+init_db()
+
+app = FastAPI(title="Planner Ingestion Service", version="0.2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -160,6 +165,7 @@ def query_endpoint(payload: QueryRequest) -> QueryResponse:
     )
 
 
+app.include_router(classes.router)
 @app.get("/academic-years", response_model=list[AcademicYearResponse])
 def list_academic_years() -> list[AcademicYearResponse]:
     with database.get_connection() as conn:
