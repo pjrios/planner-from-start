@@ -3,6 +3,13 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any, List
+
+import mimetypes
+from datetime import date, datetime
+
+from fastapi import Body, FastAPI, File, HTTPException, UploadFile
+from fastapi.encoders import jsonable_encoder
 from datetime import date, time
 import sqlite3
 from datetime import date
@@ -19,6 +26,7 @@ from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
 from .database import get_db, init_db
 from .pipeline import ingest_files
 from . import vector_store
+from .services import plan_review
 from .database import init_db
 from .routers import classes
 from . import database, scheduler, vector_store
@@ -26,6 +34,9 @@ from . import database, scheduler, vector_store
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+mimetypes.add_type("application/javascript", ".jsx")
+
+app = FastAPI(title="Planner Ingestion Service", version="0.1.0")
 try:  # pragma: no cover - chromadb may be unavailable in test environments
     from . import vector_store
 except Exception as exc:  # noqa: BLE001 - log and continue without vector store
@@ -83,6 +94,14 @@ class QueryResponse(BaseModel):
     results: list[QueryResult]
 
 
+class PlanAuditEntry(BaseModel):
+    timestamp: datetime
+    action: str
+    payload: dict[str, Any] | None = None
+
+
+class Trimester(BaseModel):
+    id: str
 @app.on_event("startup")
 def on_startup() -> None:
     """Ensure database tables exist when the application starts."""
@@ -95,6 +114,47 @@ class AcademicYearResponse(BaseModel):
     end_date: date
 
 
+class Level(BaseModel):
+    id: str
+    name: str
+    description: str | None = None
+
+
+class Topic(BaseModel):
+    id: str
+    name: str
+    trimester_id: str
+    level_id: str
+    summary: str | None = None
+
+
+class PlanDraft(BaseModel):
+    id: str
+    title: str
+    summary: str | None = None
+    status: str
+    review_notes: str | None = None
+    trimesters: list[Trimester]
+    levels: list[Level]
+    topics: list[Topic]
+    created_at: datetime
+    updated_at: datetime
+    approved_at: datetime | None = None
+    history: list[PlanAuditEntry] = Field(default_factory=list)
+
+
+class PlanPatchRequest(BaseModel):
+    title: str | None = None
+    summary: str | None = None
+    status: str | None = None
+    review_notes: str | None = None
+    trimesters: list[Trimester] | None = None
+    levels: list[Level] | None = None
+    topics: list[Topic] | None = None
+
+
+class ReviewActionRequest(BaseModel):
+    review_notes: str | None = None
 class ReschedulingSuggestion(BaseModel):
     id: int
     class_id: int
@@ -194,6 +254,37 @@ def query_endpoint(payload: QueryRequest) -> QueryResponse:
     )
 
 
+@app.get("/plans/{draft_id}", response_model=PlanDraft)
+def get_plan_draft(draft_id: str) -> PlanDraft:
+    data = plan_review.get_draft(draft_id)
+    return PlanDraft(**data)
+
+
+@app.patch("/plans/{draft_id}", response_model=PlanDraft)
+def patch_plan_draft(draft_id: str, payload: PlanPatchRequest) -> PlanDraft:
+    changes = jsonable_encoder(payload, exclude_unset=True)
+    data = plan_review.patch_draft(draft_id, changes)
+    return PlanDraft(**data)
+
+
+@app.post("/plans/{draft_id}/approve", response_model=PlanDraft)
+def approve_plan_draft(
+    draft_id: str,
+    payload: ReviewActionRequest = Body(default=ReviewActionRequest()),
+) -> PlanDraft:
+    changes = jsonable_encoder(payload, exclude_unset=True)
+    data = plan_review.approve_draft(draft_id, changes)
+    return PlanDraft(**data)
+
+
+@app.post("/plans/{draft_id}/reparse", response_model=PlanDraft)
+def reparse_plan_draft(
+    draft_id: str,
+    payload: ReviewActionRequest = Body(default=ReviewActionRequest()),
+) -> PlanDraft:
+    changes = jsonable_encoder(payload, exclude_unset=True)
+    data = plan_review.request_reparse(draft_id, changes)
+    return PlanDraft(**data)
 def _row_to_level(row: sqlite3.Row) -> LevelResponse:
     return LevelResponse(
         id=row["id"],
