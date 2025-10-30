@@ -5,6 +5,7 @@ import sqlite3
 from datetime import date, timedelta
 from typing import List, Sequence
 
+from ..database import ensure_no_class_days_table
 from ..schemas import PlanPayload, PlanWeek
 
 
@@ -36,6 +37,8 @@ def generate_classes(plan: PlanPayload | dict, db: sqlite3.Connection) -> List[s
     """Create concrete class entries for the supplied plan."""
 
     payload = _ensure_plan(plan)
+
+    ensure_no_class_days_table(db)
 
     level_row = db.execute(
         "SELECT id, start_date FROM levels WHERE id = ?",
