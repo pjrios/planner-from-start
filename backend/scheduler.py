@@ -24,8 +24,8 @@ def recompute_for_holiday(conn: sqlite3.Connection, holiday_id: int) -> list[dic
         """
         SELECT * FROM classes
         WHERE academic_year_id = ?
-          AND DATE(scheduled_date) BETWEEN DATE(?) AND DATE(?)
-        ORDER BY DATE(scheduled_date)
+          AND DATE(date) BETWEEN DATE(?) AND DATE(?)
+        ORDER BY DATE(date)
         """,
         (holiday["academic_year_id"], start, end),
     ).fetchall()
@@ -38,8 +38,10 @@ def recompute_for_holiday(conn: sqlite3.Connection, holiday_id: int) -> list[dic
     suggestions: list[dict] = []
     for class_row in overlapping_classes:
         cls = row_to_dict(class_row)
+        class_topic = cls.get("topic")
+        class_label = f"Class '{class_topic}'" if class_topic else "Class"
         suggestion_text = (
-            f"Class '{cls['name']}' on {cls['scheduled_date']} overlaps with holiday "
+            f"{class_label} scheduled on {cls['date']} overlaps with holiday "
             f"'{holiday['name']}'. Consider rescheduling."
         )
         conn.execute(
@@ -52,8 +54,8 @@ def recompute_for_holiday(conn: sqlite3.Connection, holiday_id: int) -> list[dic
         suggestions.append(
             {
                 "class_id": cls["id"],
-                "class_name": cls["name"],
-                "scheduled_date": cls["scheduled_date"],
+                "class_name": cls.get("topic"),
+                "scheduled_date": cls["date"],
                 "holiday_id": holiday_id,
                 "holiday_name": holiday["name"],
                 "suggestion": suggestion_text,
@@ -63,7 +65,7 @@ def recompute_for_holiday(conn: sqlite3.Connection, holiday_id: int) -> list[dic
     # return persisted suggestions for the holiday in case of conflict resolution
     stored = conn.execute(
         """
-        SELECT rs.*, c.name AS class_name, c.scheduled_date
+        SELECT rs.*, c.topic AS class_name, c.date AS scheduled_date
         FROM rescheduling_suggestions rs
         JOIN classes c ON c.id = rs.class_id
         WHERE rs.holiday_id = ?

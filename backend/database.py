@@ -124,6 +124,12 @@ def init_db() -> None:
         UNIQUE(group_id, weekday, start_time)
     );
 
+    CREATE TABLE IF NOT EXISTS no_class_days (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL UNIQUE,
+        reason TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS classes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,

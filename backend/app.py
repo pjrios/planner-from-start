@@ -471,7 +471,7 @@ def list_classes(academic_year_id: int | None = None) -> list[ClassResponse]:
             placeholders = ",".join("?" for _ in class_ids)
             suggestion_rows = conn.execute(
                 f"""
-                SELECT rs.*, c.name AS class_name, c.date AS scheduled_date
+                SELECT rs.*, c.topic AS class_name, c.date AS scheduled_date
                 FROM rescheduling_suggestions rs
                 JOIN classes c ON c.id = rs.class_id
                 WHERE rs.class_id IN ({placeholders})
@@ -520,7 +520,7 @@ def list_holidays(academic_year_id: int | None = None) -> list[HolidayResponse]:
         for row in rows:
             suggestions_rows = conn.execute(
                 """
-                SELECT rs.*, c.name AS class_name, c.date AS scheduled_date
+                SELECT rs.*, c.topic AS class_name, c.date AS scheduled_date
                 FROM rescheduling_suggestions rs
                 JOIN classes c ON c.id = rs.class_id
                 WHERE rs.holiday_id = ?
@@ -552,7 +552,7 @@ def get_holiday(holiday_id: int) -> HolidayResponse:
             raise HTTPException(status_code=404, detail="Holiday not found")
         suggestions = conn.execute(
             """
-            SELECT rs.*, c.name AS class_name, c.date AS scheduled_date
+            SELECT rs.*, c.topic AS class_name, c.date AS scheduled_date
             FROM rescheduling_suggestions rs
             JOIN classes c ON c.id = rs.class_id
             WHERE rs.holiday_id = ?
@@ -673,7 +673,7 @@ def _load_class(conn: sqlite3.Connection, class_id: int) -> ClassResponse:
 
     suggestions_rows = conn.execute(
         """
-        SELECT rs.*, c.name AS class_name, c.date AS scheduled_date
+        SELECT rs.*, c.topic AS class_name, c.date AS scheduled_date
         FROM rescheduling_suggestions rs
         JOIN classes c ON c.id = rs.class_id
         WHERE rs.class_id = ?
