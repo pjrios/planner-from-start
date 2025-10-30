@@ -144,6 +144,7 @@ const AgendaPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
   const [editState, setEditState] = useState({ topic: "", activities: "", materials: "" });
   const [holidayState, setHolidayState] = useState({ date: "", reason: "" });
@@ -206,6 +207,14 @@ const AgendaPage = () => {
     return [...sessionEvents, ...holidayEvents];
   }, [sessions, holidays]);
 
+  useEffect(() => {
+    if (sessions.length && !selectedSession && !selectedEventId) {
+      const firstSession = sessions[0];
+      setSelectedSession(firstSession);
+      setSelectedEventId(firstSession.id);
+    }
+  }, [sessions, selectedSession, selectedEventId]);
+
   const closeModal = () => {
     setActiveModal(null);
     setFeedback("");
@@ -218,22 +227,15 @@ const AgendaPage = () => {
 
   const handleEventClick = useCallback(
     (info) => {
+      info.jsEvent?.preventDefault();
+      info.jsEvent?.stopPropagation?.();
       const session = sessions.find((item) => item.id === info.event.id);
       if (!session) {
         return;
       }
       setSelectedSession(session);
-      setEditState({
-        topic: session.topic || "",
-        activities: session.activities?.join(", ") || "",
-        materials: session.materials?.join(", ") || ""
-      });
-      setHolidayState({
-        date: session.start ? session.start.slice(0, 10) : "",
-        reason: ""
-      });
-      setResourceState({ description: "", files: [] });
-      openModal("edit");
+      setSelectedEventId(session.id);
+      setActiveModal(null);
     },
     [sessions]
   );
@@ -257,6 +259,53 @@ const AgendaPage = () => {
     }
     info.el.setAttribute("title", buildTooltip(extendedProps));
   };
+
+  useEffect(() => {
+    if (!selectedSession) {
+      return;
+    }
+    setEditState({
+      topic: selectedSession.topic || "",
+      activities: selectedSession.activities?.join(", ") || "",
+      materials: selectedSession.materials?.join(", ") || ""
+    });
+    setHolidayState({
+      date: selectedSession.start ? selectedSession.start.slice(0, 10) : "",
+      reason: ""
+    });
+    setResourceState({ description: "", files: [] });
+  }, [selectedSession]);
+
+  const eventClassNames = useCallback(
+    (arg) => {
+      const classes = [];
+      if (arg.event.id === selectedEventId) {
+        classes.push("agenda-event-active");
+      }
+      return classes;
+    },
+    [selectedEventId]
+  );
+
+  const handleClearSelection = () => {
+    setSelectedSession(null);
+    setSelectedEventId(null);
+    setActiveModal(null);
+  };
+
+  const formattedSessionDate = useMemo(() => {
+    if (!selectedSession?.start) {
+      return "Date to be announced";
+    }
+    try {
+      return new Date(selectedSession.start).toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    } catch (err) {
+      return selectedSession.start;
+    }
+  }, [selectedSession]);
 
   const handleEditChange = (event) => {
     const { name, value } = event.target;
@@ -431,27 +480,116 @@ const AgendaPage = () => {
           </div>
         ) : null}
         {!loading && !error ? (
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay"
-            }}
-            events={events}
-            eventClick={handleEventClick}
-            eventContent={renderEventContent}
-            eventDidMount={eventDidMount}
-            height="auto"
-            selectable
-          />
+          <div className="agenda-layout">
+            <div className="agenda-calendar" aria-label="Class calendar view">
+              {events.length ? (
+                <FullCalendar
+                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                  initialView="timeGridWeek"
+                  headerToolbar={{
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay"
+                  }}
+                  events={events}
+                  eventClick={handleEventClick}
+                  eventContent={renderEventContent}
+                  eventDidMount={eventDidMount}
+                  eventClassNames={eventClassNames}
+                  height="auto"
+                  slotMinTime="07:00:00"
+                  slotMaxTime="18:00:00"
+                  firstDay={1}
+                  nowIndicator
+                  weekends
+                />
+              ) : (
+                <div className="agenda-empty-state" role="status">
+                  <h2>No sessions yet</h2>
+                  <p>
+                    Once sessions are published they will appear on the calendar. Use the quick tips
+                    to learn how to add content and share materials with your class.
+                  </p>
+                </div>
+              )}
+            </div>
+            <aside className="agenda-sidebar" aria-label="Agenda guidance and details">
+              <section className="agenda-guide">
+                <h2>Quick tips</h2>
+                <ol>
+                  <li>Select any session on the calendar to review its details.</li>
+                  <li>Use the action buttons below to update topics, mark holidays, or add resources.</li>
+                  <li>Students will see trimester colors on events to understand pacing.</li>
+                </ol>
+              </section>
+              <section className="agenda-session-card" aria-live="polite">
+                <header>
+                  <h2>Session details</h2>
+                  {selectedSession ? (
+                    <button type="button" className="link-button" onClick={handleClearSelection}>
+                      Clear selection
+                    </button>
+                  ) : null}
+                </header>
+                {selectedSession ? (
+                  <div className="agenda-session-body">
+                    <p className="agenda-session-title">{selectedSession.title}</p>
+                    <dl>
+                      <div>
+                        <dt>Date</dt>
+                        <dd>{formattedSessionDate}</dd>
+                      </div>
+                      {selectedSession.trimester ? (
+                        <div>
+                          <dt>Trimester</dt>
+                          <dd>{TRIMESTER_STYLES[selectedSession.trimester]?.label}</dd>
+                        </div>
+                      ) : null}
+                      {selectedSession.summary ? (
+                        <div>
+                          <dt>Summary</dt>
+                          <dd>{selectedSession.summary}</dd>
+                        </div>
+                      ) : null}
+                      {selectedSession.activities?.length ? (
+                        <div>
+                          <dt>Activities</dt>
+                          <dd>{selectedSession.activities.join(", ")}</dd>
+                        </div>
+                      ) : null}
+                      {selectedSession.materials?.length ? (
+                        <div>
+                          <dt>Materials</dt>
+                          <dd>{selectedSession.materials.join(", ")}</dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                    <div className="agenda-session-actions">
+                      <button type="button" onClick={() => openModal("edit")}>
+                        Edit session
+                      </button>
+                      <button type="button" className="secondary" onClick={() => openModal("holiday")}>
+                        Mark holiday
+                      </button>
+                      <button type="button" className="secondary" onClick={() => openModal("resource")}>
+                        Upload resources
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="agenda-session-placeholder">
+                    Choose a session to see the agenda details, recommended materials, and next steps.
+                  </p>
+                )}
+              </section>
+            </aside>
+          </div>
         ) : null}
       </section>
 
       <Modal
         isOpen={activeModal === "edit"}
-        title={selectedSession ? `Edit Session: ${selectedSession.title}` : "Edit Session"}
+        title={selectedSession ? `Edit ${selectedSession.title}` : "Edit session"}
         onClose={closeModal}
       >
         {selectedSession ? (
