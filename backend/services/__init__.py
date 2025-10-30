@@ -1,3 +1,4 @@
+"""Service layer utilities for the backend."""
 """Service layer for the planner backend."""
 
 from .ai_planner import (
