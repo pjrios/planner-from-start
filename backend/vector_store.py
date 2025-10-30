@@ -1,29 +1,23 @@
-"""Wrapper around Chroma vector store."""
+"""Wrapper utilities around a ChromaDB vector store."""
 from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Iterable, List
 
-import chromadb
-from chromadb import ClientAPI
-from chromadb.config import Settings
-
 from .config import VECTOR_DB_DIR
 
 LOGGER = logging.getLogger(__name__)
-LOGGER = logging.getLogger(__name__)
 
-try:
+try:  # pragma: no cover - optional dependency
     import chromadb
     from chromadb import ClientAPI
     from chromadb.config import Settings
-except Exception as exc:  # noqa: BLE001 - surface import errors at runtime
+except Exception as exc:  # noqa: BLE001 - import may fail when extras missing
     chromadb = None  # type: ignore[assignment]
     ClientAPI = None  # type: ignore[assignment]
     Settings = None  # type: ignore[assignment]
     LOGGER.warning("ChromaDB could not be imported: %s", exc)
 
-from .config import VECTOR_DB_DIR
 _COLLECTION_NAME = "planner_documents"
 
 
@@ -32,10 +26,9 @@ def _get_client() -> ClientAPI:
         raise RuntimeError(
             "ChromaDB is not available. Install the chromadb extra dependencies to enable vector storage."
         )
-    client = chromadb.PersistentClient(
+    return chromadb.PersistentClient(
         path=str(VECTOR_DB_DIR), settings=Settings(anonymized_telemetry=False)
     )
-    return client
 
 
 def get_or_create_collection():
@@ -46,12 +39,12 @@ def get_or_create_collection():
 def add_embeddings(
     texts: List[str], embeddings: Iterable[List[float]], metadatas: List[dict[str, str]]
 ) -> None:
-    collection = get_or_create_collection()
     try:
         collection = get_or_create_collection()
-    except RuntimeError as exc:
+    except RuntimeError as exc:  # pragma: no cover - optional dependency path
         LOGGER.warning("Vector store unavailable; skipping embedding persistence: %s", exc)
         return
+
     existing_count = collection.count()
     ids = [f"doc_{existing_count + idx}" for idx in range(len(texts))]
     collection.add(
@@ -64,12 +57,12 @@ def add_embeddings(
 
 
 def similarity_search(query: str, *, n_results: int = 5) -> List[Dict[str, Any]]:
-    collection = get_or_create_collection()
     try:
         collection = get_or_create_collection()
-    except RuntimeError as exc:
+    except RuntimeError as exc:  # pragma: no cover - optional dependency path
         LOGGER.warning("Vector store unavailable; returning empty results: %s", exc)
         return []
+
     if collection.count() == 0:
         LOGGER.info("Similarity search skipped: collection is empty")
         return []
@@ -95,3 +88,6 @@ def similarity_search(query: str, *, n_results: int = 5) -> List[Dict[str, Any]]
         )
 
     return response
+
+
+__all__ = ["add_embeddings", "similarity_search"]

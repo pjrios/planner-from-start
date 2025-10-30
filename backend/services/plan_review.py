@@ -1,15 +1,16 @@
-"""Plan review service with simple JSON-backed persistence."""
+"""Persistent storage helpers for plan review drafts."""
 from __future__ import annotations
 
-import json
-from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict
+from copy import deepcopy
+import json
 
 from ..config import DATA_DIR
+
 
 PLAN_REVIEW_DIR = DATA_DIR / "plan_reviews"
 PLAN_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
@@ -147,7 +148,15 @@ def _write_raw(draft_id: str, record: PlanRecord) -> None:
 def _apply_changes(draft: dict[str, Any], changes: dict[str, Any]) -> bool:
     """Apply partial updates to the draft. Returns True if something changed."""
 
-    mutable_fields = {"title", "summary", "review_notes", "status", "trimesters", "levels", "topics"}
+    mutable_fields = {
+        "title",
+        "summary",
+        "review_notes",
+        "status",
+        "trimesters",
+        "levels",
+        "topics",
+    }
     changed = False
     for key, value in changes.items():
         if key not in mutable_fields:
@@ -235,3 +244,11 @@ def request_reparse(draft_id: str, payload: dict[str, Any] | None = None) -> dic
         )
         _write_raw(draft_id, record)
         return record.to_response()
+
+
+__all__ = [
+    "approve_draft",
+    "get_draft",
+    "patch_draft",
+    "request_reparse",
+]

@@ -1,46 +1,46 @@
-"""Service layer modules for backend business logic."""
-
-from .reports import (
-    ActivityRecord,
-    load_default_records,
-    trimester_summary,
-    topic_summary,
-    build_trimester_csv,
-    build_topic_csv,
-    build_trimester_pdf,
-    build_topic_pdf,
-)
-
-__all__ = [
-    "ActivityRecord",
-    "load_default_records",
-    "trimester_summary",
-    "topic_summary",
-    "build_trimester_csv",
-    "build_topic_csv",
-    "build_trimester_pdf",
-    "build_topic_pdf",
-"""Service layer for plan ingestion and extraction."""
-"""Service layer helpers for the backend."""
-
-__all__ = [
-    "plan_review",
-"""Service layer package."""
-"""Service layer utilities for the backend."""
-"""Service layer for the planner backend."""
+"""Convenient re-exports for the backend service layer."""
+from __future__ import annotations
 
 from .ai_planner import (
+    AIPlannerService,
     ActivityPlan,
     PlannerOutput,
     PlannerTopic,
     ResourcePlan,
-    AIPlannerService,
+)
+from .plan_review import (
+    approve_draft,
+    get_draft,
+    patch_draft,
+    request_reparse,
+)
+from .reports import (
+    ActivityRecord,
+    build_topic_csv,
+    build_topic_pdf,
+    build_trimester_csv,
+    build_trimester_pdf,
+    load_default_records,
+    topic_summary,
+    trimester_summary,
 )
 
 __all__ = [
+    "AIPlannerService",
     "ActivityPlan",
+    "ActivityRecord",
     "PlannerOutput",
     "PlannerTopic",
     "ResourcePlan",
-    "AIPlannerService",
+    "approve_draft",
+    "build_topic_csv",
+    "build_topic_pdf",
+    "build_trimester_csv",
+    "build_trimester_pdf",
+    "get_draft",
+    "load_default_records",
+    "patch_draft",
+    "request_reparse",
+    "topic_summary",
+    "trimester_summary",
 ]
