@@ -10,7 +10,10 @@ DATA_DIR: Final[Path] = BASE_DIR / "data"
 VECTOR_DB_DIR: Final[Path] = DATA_DIR / "vector_store"
 TEMP_UPLOAD_DIR: Final[Path] = DATA_DIR / "uploads"
 FRONTEND_DIR: Final[Path] = BASE_DIR / "frontend"
-PLAN_UPLOAD_ROOT: Final[Path] = Path("/uploads/plans")
+DEFAULT_PLAN_UPLOAD_ROOT: Final[Path] = DATA_DIR / "uploads" / "plans"
+PLAN_UPLOAD_ROOT: Final[Path] = Path(
+    os.getenv("PLAN_UPLOAD_ROOT", str(DEFAULT_PLAN_UPLOAD_ROOT))
+)
 PLAN_DRAFTS_PATH: Final[Path] = DATA_DIR / "plan_drafts.json"
 INGESTION_API_TOKEN: Final[str] = os.getenv("INGESTION_API_TOKEN", "local-dev-token")
 
@@ -24,8 +27,6 @@ CHUNK_SIZE: Final[int] = int(os.getenv("CHUNK_SIZE", 800))
 CHUNK_OVERLAP: Final[int] = int(os.getenv("CHUNK_OVERLAP", 200))
 
 # Ensure important directories exist at import time.
-for directory in (DATA_DIR, VECTOR_DB_DIR, TEMP_UPLOAD_DIR):
-    directory.mkdir(parents=True, exist_ok=True)
 for directory in (DATA_DIR, VECTOR_DB_DIR, TEMP_UPLOAD_DIR, PLAN_UPLOAD_ROOT):
     directory.mkdir(parents=True, exist_ok=True)
 
