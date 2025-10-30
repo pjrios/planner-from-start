@@ -69,6 +69,9 @@ describe("AgendaPage", () => {
     const eventNode = await screen.findByTestId("agenda-event-session-1");
     fireEvent.click(eventNode);
 
+    const editButton = await screen.findByRole("button", { name: /edit session/i });
+    fireEvent.click(editButton);
+
     const topicInput = await screen.findByLabelText("Topic");
     fireEvent.change(topicInput, { target: { value: "Quadratic Functions" } });
 
