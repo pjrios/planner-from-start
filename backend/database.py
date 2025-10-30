@@ -125,8 +125,7 @@ def init_db() -> None:
     );
 
     CREATE TABLE IF NOT EXISTS no_class_days (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT NOT NULL UNIQUE,
+        date TEXT PRIMARY KEY,
         reason TEXT
     );
 
@@ -211,6 +210,20 @@ def init_db() -> None:
 
     with connection_scope() as conn:
         conn.executescript(schema)
+        ensure_no_class_days_table(conn)
+
+
+def ensure_no_class_days_table(conn: sqlite3.Connection) -> None:
+    """Create the ``no_class_days`` table if it is missing."""
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS no_class_days (
+            date TEXT PRIMARY KEY,
+            reason TEXT
+        )
+        """
+    )
 
 
 __all__ = [
@@ -218,6 +231,7 @@ __all__ = [
     "configure",
     "get_connection",
     "get_db",
+    "ensure_no_class_days_table",
     "init_db",
     "open_connection",
     "row_to_dict",
