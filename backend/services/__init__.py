@@ -1,3 +1,4 @@
+"""Service layer for plan ingestion and extraction."""
 """Service layer helpers for the backend."""
 
 __all__ = [

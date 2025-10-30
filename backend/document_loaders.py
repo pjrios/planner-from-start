@@ -5,9 +5,20 @@ import io
 from pathlib import Path
 from typing import Iterable, Iterator, Tuple
 
-import docx2txt
-from pptx import Presentation
-from PyPDF2 import PdfReader
+try:  # pragma: no cover - optional dependencies
+    import docx2txt
+except Exception:  # noqa: BLE001 - optional dependency
+    docx2txt = None  # type: ignore[assignment]
+
+try:  # pragma: no cover - optional dependencies
+    from pptx import Presentation
+except Exception:  # noqa: BLE001 - optional dependency
+    Presentation = None  # type: ignore[assignment]
+
+try:  # pragma: no cover - optional dependencies
+    from PyPDF2 import PdfReader
+except Exception:  # noqa: BLE001 - optional dependency
+    PdfReader = None  # type: ignore[assignment]
 
 SUPPORTED_EXTENSIONS: Tuple[str, ...] = (".txt", ".md", ".pdf", ".docx", ".pptx")
 
@@ -17,6 +28,8 @@ class UnsupportedDocumentError(ValueError):
 
 
 def _load_pdf(path: Path) -> str:
+    if PdfReader is None:
+        raise UnsupportedDocumentError("PyPDF2 is required to load PDF files")
     reader = PdfReader(str(path))
     text_buffer = io.StringIO()
     for page in reader.pages:
@@ -26,10 +39,14 @@ def _load_pdf(path: Path) -> str:
 
 
 def _load_docx(path: Path) -> str:
+    if docx2txt is None:
+        raise UnsupportedDocumentError("docx2txt is required to load DOCX files")
     return docx2txt.process(str(path)) or ""
 
 
 def _load_pptx(path: Path) -> str:
+    if Presentation is None:
+        raise UnsupportedDocumentError("python-pptx is required to load PPTX files")
     presentation = Presentation(str(path))
     text_runs: list[str] = []
     for slide in presentation.slides:

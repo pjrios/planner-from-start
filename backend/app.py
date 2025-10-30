@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field, validator
 from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
 from .database import get_db, init_db
 from .pipeline import ingest_files
+from .routes.ingest import router as plan_ingest_router
 from . import vector_store
 from .services import plan_review
 from .database import init_db
@@ -65,6 +66,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(plan_ingest_router)
 
 
 if FRONTEND_DIR.exists():
