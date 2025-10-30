@@ -115,6 +115,192 @@ output {
   font-size: 0.95rem;
 }
 
+.holiday-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.holiday-manager__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.holiday-manager__year-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.holiday-manager__year-picker select {
+  min-width: 180px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.6);
+  color: inherit;
+}
+
+.holiday-manager__content {
+  display: grid;
+  gap: 1.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.holiday-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.holiday-form input[type="text"],
+.holiday-form input[type="date"] {
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.6);
+  color: inherit;
+}
+
+.holiday-form__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.holiday-form__actions button[type="button"] {
+  background: rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+}
+
+.holiday-form__status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #fbbf24;
+}
+
+.holiday-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.holiday-list__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.holiday-list__suggestions {
+  margin-top: 0.75rem;
+  padding-left: 1.25rem;
+  color: #bae6fd;
+}
+
+.holiday-list__no-conflict {
+  margin: 0.5rem 0 0;
+  color: #94a3b8;
+}
+
+.holiday-list__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.holiday-list__actions button {
+  align-self: stretch;
+}
+
+.holiday-calendar .calendar-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.calendar-grid__item {
+  position: relative;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.5);
+  text-align: left;
+}
+
+.calendar-grid__item--holiday {
+  border-color: rgba(248, 113, 113, 0.6);
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.3);
+}
+
+.calendar-grid__date {
+  display: block;
+  font-size: 0.85rem;
+  color: #cbd5f5;
+}
+
+.calendar-grid__name {
+  display: block;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.calendar-grid__badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(248, 113, 113, 0.2);
+  color: #fecaca;
+  font-size: 0.75rem;
+}
+
+.class-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  z-index: 50;
+}
+
+.class-modal__content {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: min(480px, 100%);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.class-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.class-modal__header button {
+  align-self: center;
+  padding: 0.4rem 0.75rem;
+}
+
+.class-modal__suggestions {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  color: #bae6fd;
+}
+
 #results-container {
   margin-top: 1.25rem;
 }
@@ -152,5 +338,437 @@ output {
   button {
     width: 100%;
     justify-content: center;
+  }
+
+  .holiday-manager__content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.agenda-page {
+  background: rgba(15, 23, 42, 0.94);
+  min-height: 100vh;
+  color: #f8fafc;
+  padding: 2rem;
+}
+
+.agenda-header {
+  max-width: 960px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.agenda-header h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.agenda-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(30, 41, 59, 0.75);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+}
+
+.trimester-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.trimester-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.trimester-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.agenda-event {
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.agenda-event-title {
+  font-weight: 600;
+}
+
+.agenda-event-summary,
+.agenda-event-meta {
+  font-size: 0.75rem;
+  color: #0f172a;
+}
+
+.agenda-event-holiday {
+  background: rgba(248, 250, 252, 0.8);
+  color: #334155;
+}
+
+.agenda-holiday-cell {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.agenda-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  margin-bottom: 1rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.link-button:hover {
+  color: #0ea5e9;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: min(480px, 90vw);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 25px 50px rgba(15, 23, 42, 0.35);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.modal-form input,
+.modal-form textarea {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.85);
+  color: #f8fafc;
+  font-size: 0.95rem;
+}
+
+.modal-form textarea {
+  min-height: 96px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-actions .secondary {
+  background: rgba(148, 163, 184, 0.2);
+  color: #f8fafc;
+}
+
+.modal-secondary-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-divider {
+  height: 1px;
+  background: rgba(148, 163, 184, 0.25);
+}
+
+.modal-feedback {
+  font-size: 0.9rem;
+  color: #38bdf8;
+}
+
+@media (max-width: 768px) {
+  .agenda-page {
+    padding: 1rem;
+  }
+  .agenda-header {
+    text-align: left;
+  }
+  .agenda-content {
+    padding: 1rem;
+  }
+}
+
+.agenda-page {
+  background: rgba(15, 23, 42, 0.94);
+  min-height: 100vh;
+  color: #f8fafc;
+  padding: 2rem;
+}
+
+.agenda-header {
+  max-width: 960px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.agenda-header h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.agenda-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(30, 41, 59, 0.75);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+}
+
+.trimester-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.trimester-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.trimester-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.agenda-event {
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.agenda-event-title {
+  font-weight: 600;
+}
+
+.agenda-event-summary,
+.agenda-event-meta {
+  font-size: 0.75rem;
+  color: #0f172a;
+}
+
+.agenda-event-holiday {
+  background: rgba(248, 250, 252, 0.8);
+  color: #334155;
+}
+
+.agenda-holiday-cell {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.agenda-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  margin-bottom: 1rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.link-button:hover {
+  color: #0ea5e9;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: min(480px, 90vw);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 25px 50px rgba(15, 23, 42, 0.35);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.modal-form input,
+.modal-form textarea {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.85);
+  color: #f8fafc;
+  font-size: 0.95rem;
+}
+
+.modal-form textarea {
+  min-height: 96px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-actions .secondary {
+  background: rgba(148, 163, 184, 0.2);
+  color: #f8fafc;
+}
+
+.modal-secondary-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-divider {
+  height: 1px;
+  background: rgba(148, 163, 184, 0.25);
+}
+
+.modal-feedback {
+  font-size: 0.9rem;
+  color: #38bdf8;
+}
+
+@media (max-width: 768px) {
+  .agenda-page {
+    padding: 1rem;
+  }
+  .agenda-header {
+    text-align: left;
+  }
+  .agenda-content {
+    padding: 1rem;
   }
 }
