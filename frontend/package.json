@@ -1,0 +1,28 @@
+{
+  "name": "planner-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@fullcalendar/daygrid": "6.1.10",
+    "@fullcalendar/interaction": "6.1.10",
+    "@fullcalendar/react": "6.1.10",
+    "@fullcalendar/timegrid": "6.1.10",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "7.24.4",
+    "@babel/preset-react": "7.24.1",
+    "@testing-library/jest-dom": "6.4.2",
+    "@testing-library/react": "14.2.1",
+    "babel-jest": "29.7.0",
+    "identity-obj-proxy": "3.0.0",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "whatwg-fetch": "3.6.20"
+  }
+}
