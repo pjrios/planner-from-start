@@ -108,6 +108,66 @@ button:disabled {
   box-shadow: none;
 }
 
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.report-download {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #e0f2fe;
+  backdrop-filter: blur(6px);
+}
+
+.report-download:hover {
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.report-card {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.report-table th,
+.report-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  text-align: left;
+}
+
+.report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.report-table tbody tr:nth-child(odd) {
+  background: rgba(30, 41, 59, 0.4);
+}
+
 .query-input {
   display: flex;
   flex-wrap: wrap;
@@ -139,6 +199,8 @@ output {
   font-size: 0.95rem;
 }
 
+output[data-state="error"] {
+  color: #fca5a5;
 .holiday-manager {
   display: flex;
   flex-direction: column;
