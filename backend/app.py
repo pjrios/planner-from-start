@@ -1,8 +1,20 @@
+"""FastAPI application exposing ingestion endpoints."""
 """FastAPI application exposing ingestion and scheduling endpoints."""
 from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import List
+
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+
+from .config import FRONTEND_DIR, TEMP_UPLOAD_DIR
+from .pipeline import ingest_files
+from . import vector_store
 from typing import Any, List
 
 import mimetypes
@@ -39,6 +51,7 @@ from . import database, scheduler, vector_store
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+app = FastAPI(title="Planner Ingestion Service", version="0.1.0")
 mimetypes.add_type("application/javascript", ".jsx")
 
 app = FastAPI(title="Planner Ingestion Service", version="0.1.0")

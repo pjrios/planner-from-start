@@ -41,6 +41,14 @@ curl -X POST "http://localhost:8000/query" \
 
 Check service health at `http://localhost:8000/health`.
 
+### Troubleshooting
+- If `uvicorn` crashes with `AttributeError: np.float_ was removed in the NumPy 2.0 release`,
+  reinstall the requirements to ensure the pinned NumPy < 2.0 version is used:
+  ```bash
+  source .venv/bin/activate
+  pip install --upgrade --force-reinstall -r requirements.txt
+  ```
+
 ## Windows instructions
 See [WINDOWS_SETUP.md](WINDOWS_SETUP.md) for a step-by-step setup process tailored to
 CUDA-enabled systems.

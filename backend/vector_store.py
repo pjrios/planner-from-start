@@ -4,6 +4,13 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, Iterable, List
 
+import chromadb
+from chromadb import ClientAPI
+from chromadb.config import Settings
+
+from .config import VECTOR_DB_DIR
+
+LOGGER = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 
 try:
@@ -39,6 +46,7 @@ def get_or_create_collection():
 def add_embeddings(
     texts: List[str], embeddings: Iterable[List[float]], metadatas: List[dict[str, str]]
 ) -> None:
+    collection = get_or_create_collection()
     try:
         collection = get_or_create_collection()
     except RuntimeError as exc:
@@ -56,6 +64,7 @@ def add_embeddings(
 
 
 def similarity_search(query: str, *, n_results: int = 5) -> List[Dict[str, Any]]:
+    collection = get_or_create_collection()
     try:
         collection = get_or_create_collection()
     except RuntimeError as exc:

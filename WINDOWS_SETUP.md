@@ -71,6 +71,12 @@ pip install -r requirements.txt
 This pulls in FastAPI, ChromaDB, document loaders, and the
 `sentence-transformers` model required for embeddings. Optional extras such as
 OCR or LangChain tooling can still be added later if your workflow needs them.
+If you previously installed packages and now encounter a NumPy 2.0 related
+error (e.g., `AttributeError: np.float_ was removed`), force a reinstall so the
+pinned NumPy < 2.0 wheel is used:
+```powershell
+pip install --upgrade --force-reinstall -r requirements.txt
+```
 
 ## 6. Install and Configure a Vector Database
 

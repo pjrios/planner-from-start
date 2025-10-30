@@ -24,6 +24,8 @@ CHUNK_SIZE: Final[int] = int(os.getenv("CHUNK_SIZE", 800))
 CHUNK_OVERLAP: Final[int] = int(os.getenv("CHUNK_OVERLAP", 200))
 
 # Ensure important directories exist at import time.
+for directory in (DATA_DIR, VECTOR_DB_DIR, TEMP_UPLOAD_DIR):
+    directory.mkdir(parents=True, exist_ok=True)
 for directory in (DATA_DIR, VECTOR_DB_DIR, TEMP_UPLOAD_DIR, PLAN_UPLOAD_ROOT):
     directory.mkdir(parents=True, exist_ok=True)
 

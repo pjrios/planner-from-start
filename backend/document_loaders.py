@@ -5,6 +5,9 @@ import io
 from pathlib import Path
 from typing import Iterable, Iterator, Tuple
 
+import docx2txt
+from pptx import Presentation
+from PyPDF2 import PdfReader
 try:  # pragma: no cover - optional dependencies
     import docx2txt
 except Exception:  # noqa: BLE001 - optional dependency
